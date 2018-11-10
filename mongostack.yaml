@@ -1,0 +1,45 @@
+---:
+kind: Service
+apiVersion: v1
+metadata:
+  name: fleetman-mongodb
+spec:
+  selector:
+    endpoint: mongodb
+  ports:
+  - name: mongo-port
+    port: 27017
+  type: ClusterIP      
+
+
+
+# Mongo 
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: mongodb
+spec:
+  selector:
+    matchLabels:
+      endpoint: mongodb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        endpoint: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:3.6.5-jessie
+          volumeMounts:
+          - name: mongo-persistence
+            mountPath: /data/db
+      volumes:
+        - name: mongo-persistence
+        # pointer to the configuration of HOW we want the mount to be implemented.
+          persistentVolumeClaim:
+            claimName: mongo-volume
+     
+          
+           
